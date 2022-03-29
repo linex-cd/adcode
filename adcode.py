@@ -85,7 +85,8 @@ for block in blocks:
 	#如果是00结束。则level是市
 	#市
 	if block['code'][4:] == '00' and block['code'][2:4] != '00':
-		city_map[block['code'][0:4]] = block['name']
+		city_map['name_' + block['code'][0:4]] = block['name']
+		city_map['code_' + block['code'][0:4]] = block['code']
 		
 		item = {}
 		
@@ -110,16 +111,22 @@ for block in blocks:
 	#区/直辖市下属区
 	if block['code'][4:] != '00' and block['code'][2:4] != '00':
 		
-		#如果是直辖市，直接用直辖市
+		
 		name_city = ''
 		code_city = ''
-		
 
-		if 'code_' + block['code'][0:4] not in city_map:
+		if 'code_' + block['code'][0:2] not in province_map.keys() and 'code_' + block['code'][0:4] not in city_map.keys():
+			continue
+		#endif
+		
+		#直辖市下属区
+		if 'code_' + block['code'][0:4] not in city_map.keys() and 'code_' + block['code'][0:2] in province_map.keys():
 			name_city = province_map['name_' + block['code'][0:2]]
 			code_city = province_map['code_' + block['code'][0:2]]
+		
+		#区
 		else:
-			name_city = province_map['code_' + block['code'][0:4]]
+			name_city = city_map['name_' + block['code'][0:4]]
 			code_city = city_map['code_' + block['code'][0:4]]
 		#endif
 		
@@ -132,7 +139,7 @@ for block in blocks:
 		
 		item['name_province'] = province_map['name_' + block['code'][0:2]]
 		item['name_city'] = name_city
-		item['name_county'] = block['code']
+		item['name_county'] = block['name']
 		item['code_province'] = province_map['code_' + block['code'][0:2]]
 		item['code_city'] = code_city
 		item['code_county'] = block['code']
@@ -140,11 +147,10 @@ for block in blocks:
 		adcode.append(item)
 		
 		#print('county:', item)
-		
+		#break
 		continue
 	#endif
-	
-	
+
 #endfor
 
 
